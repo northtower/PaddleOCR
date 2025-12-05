@@ -37,6 +37,7 @@ from tools.infer.predict_rec import TextRecognizer
 from ppstructure.layout.predict_layout import LayoutPredictor
 from ppstructure.table.predict_table import TableSystem, to_excel
 from ppstructure.utility import parse_args, draw_structure_result, cal_ocr_word_box
+from ppstructure.line_detector import detect_all_lines, filter_lines_by_text_overlap
 
 logger = get_logger()
 
@@ -53,6 +54,12 @@ class StructureSystem(object):
             self.image_orientation_predictor = paddleclas.PaddleClas(
                 model_name="text_image_orientation"
             )
+
+        # Line detection parameters
+        self.enable_line_detection = getattr(args, 'enable_line_detection', False)
+        self.line_min_length = getattr(args, 'line_min_length', 50)
+        self.line_max_thickness = getattr(args, 'line_max_thickness', 5)
+        self.filter_line_text_overlap = getattr(args, 'filter_line_text_overlap', True)
 
         if self.mode == "structure":
             if not args.show_log:
@@ -188,6 +195,57 @@ class StructureSystem(object):
                         "score": region["score"],
                     }
                 )
+
+            # [新增] 线条检测功能
+            if self.enable_line_detection:
+                tic = time.time()
+                line_results = detect_all_lines(
+                    ori_im, 
+                    horizontal_min_length=self.line_min_length,
+                    vertical_min_length=self.line_min_length,
+                    max_thickness=self.line_max_thickness
+                )
+                
+                # 如果需要过滤与文字重叠的线条
+                if self.filter_line_text_overlap and text_res is not None:
+                    text_boxes = [r["text_region"] for r in text_res]
+                    line_results['horizontal'] = filter_lines_by_text_overlap(
+                        line_results['horizontal'], text_boxes
+                    )
+                    line_results['vertical'] = filter_lines_by_text_overlap(
+                        line_results['vertical'], text_boxes
+                    )
+                
+                # 将横线结果添加到返回列表
+                for line_box in line_results['horizontal']:
+                    x1, y1, x2, y2 = line_box
+                    roi_img = ori_im[y1:y2, x1:x2, :]
+                    res_list.append({
+                        'type': 'underline',
+                        'bbox': line_box,
+                        'img': roi_img,
+                        'res': None,
+                        'img_idx': img_idx,
+                        'score': 1.0,
+                        'direction': 'horizontal'
+                    })
+                
+                # 将竖线结果添加到返回列表
+                for line_box in line_results['vertical']:
+                    x1, y1, x2, y2 = line_box
+                    roi_img = ori_im[y1:y2, x1:x2, :]
+                    res_list.append({
+                        'type': 'line',
+                        'bbox': line_box,
+                        'img': roi_img,
+                        'res': None,
+                        'img_idx': img_idx,
+                        'score': 1.0,
+                        'direction': 'vertical'
+                    })
+                
+                toc = time.time()
+                time_dict["line_detection"] = toc - tic
 
             end = time.time()
             time_dict["all"] = end - start

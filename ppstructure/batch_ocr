@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+批量OCR图片处理脚本
+用于检索指定目录中的图片并依次调用PaddleOCR命令
+"""
+
+import os
+import sys
+import subprocess
+from pathlib import Path
+from typing import List
+
+# 支持的图片格式
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.webp'}
+
+def find_images(directory: str) -> List[str]:
+    """
+    在指定目录中查找所有图片文件
+    
+    Args:
+        directory: 目标目录路径
+        
+    Returns:
+        图片文件路径列表
+    """
+    image_files = []
+    dir_path = Path(directory)
+    
+    if not dir_path.exists():
+        print(f"错误: 目录不存在 - {directory}")
+        return image_files
+    
+    if not dir_path.is_dir():
+        print(f"错误: 路径不是目录 - {directory}")
+        return image_files
+    
+    # 遍历目录中的所有文件
+    for file_path in sorted(dir_path.iterdir()):
+        if file_path.is_file() and file_path.suffix.lower() in IMAGE_EXTENSIONS:
+            image_files.append(str(file_path.absolute()))
+    
+    return image_files
+
+def run_ocr_command(image_path: str, output_dir: str) -> bool:
+    """
+    对单张图片执行OCR命令
+    
+    Args:
+        image_path: 图片文件路径
+        output_dir: 输出目录路径
+        
+    Returns:
+        执行是否成功
+    """
+    cmd = [
+        'python', 'predict_system.py',
+        f'--image_dir={image_path}',
+        '--det_model_dir=inference/ch_PP-OCRv3_det_infer',
+        '--rec_model_dir=inference/ch_PP-OCRv3_rec_infer',
+        '--rec_char_dict_path=../ppocr/utils/ppocr_keys_v1.txt',
+        '--table_model_dir=inference/ch_ppstructure_mobile_v2.0_SLANet_infer',
+        '--table_char_dict_path=../ppocr/utils/dict/table_structure_dict_ch.txt',
+        '--layout_model_dir=inference/picodet_lcnet_x1_0_fgd_layout_cdla_infer',
+        '--layout_dict_path=../ppocr/utils/dict/layout_dict/layout_cdla_dict.txt',
+        '--vis_font_path=../doc/fonts/chinese_cht.ttf',
+        f'--output={output_dir}',
+        '--return_word_box=True'
+    ]
+    
+    print(f"\n正在处理: {image_path}")
+    print(f"执行命令: {' '.join(cmd)}\n")
+    
+    try:
+        result = subprocess.run(cmd, check=True, capture_output=False)
+        print(f"✓ 成功处理: {image_path}")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"✗ 处理失败: {image_path}")
+        print(f"错误信息: {e}")
+        return False
+    except FileNotFoundError:
+        print("错误: 找不到 predict_system.py 或 python 命令")
+        print("请确保在正确的目录下运行此脚本")
+        return False
+
+def main():
+    """主函数"""
+    # 检查命令行参数
+    if len(sys.argv) < 2:
+        print("用法: python batch_ocr.py <图片目录路径>")
+        print("示例: python batch_ocr.py /Users/zoutao03/codeBase/baidu/netdisk/pdf-parser-clib/examples/0a4ad205277a55592971b5ebf7970cbb")
+        sys.exit(1)
+    
+    # 获取目录路径
+    target_dir = sys.argv[1]
+    print(f"目标目录: {target_dir}")
+    
+    # 创建输出目录(使用输入目录的最后一层名称)
+    dir_name = Path(target_dir).name
+    output_dir = f"./output/{dir_name}"
+    print(f"输出目录: {output_dir}")
+    
+    # 确保输出目录存在
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    
+    # 查找所有图片
+    print("\n正在搜索图片文件...")
+    image_files = find_images(target_dir)
+    
+    if not image_files:
+        print(f"未在目录中找到图片文件: {target_dir}")
+        print(f"支持的格式: {', '.join(IMAGE_EXTENSIONS)}")
+        sys.exit(1)
+    
+    print(f"找到 {len(image_files)} 张图片\n")
+    
+    # 显示找到的图片列表
+    print("=" * 60)
+    for i, img in enumerate(image_files, 1):
+        print(f"{i}. {Path(img).name}")
+    print("=" * 60)
+    print(f"\n开始处理 {len(image_files)} 张图片...\n")
+    
+    # 处理每张图片
+    success_count = 0
+    fail_count = 0
+    
+    for i, image_path in enumerate(image_files, 1):
+        print(f"\n{'='*60}")
+        print(f"进度: {i}/{len(image_files)}")
+        print(f"{'='*60}")
+        
+        if run_ocr_command(image_path, output_dir):
+            success_count += 1
+        else:
+            fail_count += 1
+    
+    # 打印总结
+    print(f"\n{'='*60}")
+    print("处理完成!")
+    print(f"{'='*60}")
+    print(f"总计: {len(image_files)} 张图片")
+    print(f"成功: {success_count} 张")
+    print(f"失败: {fail_count} 张")
+    print(f"输出目录: {output_dir}")
+    print(f"{'='*60}")
+
+if __name__ == "__main__":
+    main()

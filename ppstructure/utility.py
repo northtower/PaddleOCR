@@ -147,6 +147,31 @@ def init_args():
         default=(255, 255, 255),
         help="Replacement color for the alpha channel, if the latter is present; R,G,B integers",
     )
+    # params for line detection
+    parser.add_argument(
+        "--enable_line_detection",
+        type=str2bool,
+        default=False,
+        help="Whether to enable line detection (for underlines and blank filling lines)",
+    )
+    parser.add_argument(
+        "--line_min_length",
+        type=int,
+        default=50,
+        help="Minimum length (in pixels) for line detection",
+    )
+    parser.add_argument(
+        "--line_max_thickness",
+        type=int,
+        default=5,
+        help="Maximum thickness (in pixels) for line detection",
+    )
+    parser.add_argument(
+        "--filter_line_text_overlap",
+        type=str2bool,
+        default=True,
+        help="Whether to filter lines that overlap with text regions",
+    )
 
     return parser
 
@@ -171,25 +196,37 @@ def draw_structure_result(image, result, font_path):
 
     for region in result:
         if region["type"] not in catid2color:
-            box_color = (
-                random.randint(0, 255),
-                random.randint(0, 255),
-                random.randint(0, 255),
-            )
+            # 为线条类型设置特定颜色
+            if region["type"] in ["underline", "line"]:
+                box_color = (255, 0, 0)  # 红色用于线条
+            else:
+                box_color = (
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                )
             catid2color[region["type"]] = box_color
         else:
             box_color = catid2color[region["type"]]
         box_layout = region["bbox"]
+        
+        # 为线条类型使用更粗的边框
+        line_width = 5 if region["type"] in ["underline", "line"] else 3
         draw_layout.rectangle(
             [(box_layout[0], box_layout[1]), (box_layout[2], box_layout[3])],
             outline=box_color,
-            width=3,
+            width=line_width,
         )
 
+        # 添加类型标签
+        label_text = region["type"]
+        if region["type"] in ["underline", "line"] and "direction" in region:
+            label_text = f"{region['type']}({region['direction']})"
+        
         if int(PIL.__version__.split(".")[0]) < 10:
-            text_w, text_h = font.getsize(region["type"])
+            text_w, text_h = font.getsize(label_text)
         else:
-            left, top, right, bottom = font.getbbox(region["type"])
+            left, top, right, bottom = font.getbbox(label_text)
             text_w, text_h = right - left, bottom - top
 
         draw_layout.rectangle(
@@ -200,12 +237,15 @@ def draw_structure_result(image, result, font_path):
             fill=text_background_color,
         )
         draw_layout.text(
-            (box_layout[0], box_layout[1]), region["type"], fill=text_color, font=font
+            (box_layout[0], box_layout[1]), label_text, fill=text_color, font=font
         )
 
         if region["type"] == "table" or (
             region["type"] == "equation" and "latex" in region["res"]
         ):
+            pass
+        elif region["type"] in ["underline", "line"]:
+            # 线条类型没有文字内容，跳过
             pass
         else:
             for text_result in region["res"]:
