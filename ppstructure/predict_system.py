@@ -287,27 +287,37 @@ class StructureSystem(object):
             for token in style_token:
                 if token in rec_str:
                     rec_str = rec_str.replace(token, "")
+            
+            # 检查是否包含字体属性信息
+            font_attr = None
+            if len(rec_res) > 3 and isinstance(rec_res[3], dict):
+                font_attr = rec_res[3]
+            
             if self.return_word_box:
                 word_box_content_list, word_box_list = cal_ocr_word_box(
                     rec_str, box, rec_res[2]
                 )
-                res.append(
-                    {
-                        "text": rec_str,
-                        "confidence": float(rec_conf),
-                        "text_region": box.tolist(),
-                        "text_word": word_box_content_list,
-                        "text_word_region": word_box_list,
-                    }
-                )
+                result_dict = {
+                    "text": rec_str,
+                    "confidence": float(rec_conf),
+                    "text_region": box.tolist(),
+                    "text_word": word_box_content_list,
+                    "text_word_region": word_box_list,
+                }
+                if font_attr is not None:
+                    result_dict["font_family"] = font_attr.get("class_name", "unknown")
+                    result_dict["font_confidence"] = font_attr.get("confidence", 0.0)
+                res.append(result_dict)
             else:
-                res.append(
-                    {
-                        "text": rec_str,
-                        "confidence": float(rec_conf),
-                        "text_region": box.tolist(),
-                    }
-                )
+                result_dict = {
+                    "text": rec_str,
+                    "confidence": float(rec_conf),
+                    "text_region": box.tolist(),
+                }
+                if font_attr is not None:
+                    result_dict["font_family"] = font_attr.get("class_name", "unknown")
+                    result_dict["font_confidence"] = font_attr.get("confidence", 0.0)
+                res.append(result_dict)
         return res, ocr_time_dict
 
     def _filter_text_res(self, text_res, bbox):
@@ -341,7 +351,7 @@ def save_structure_res(res, save_folder, img_name, img_idx=0):
     ) as f:
         for region in res_cp:
             roi_img = region.pop("img")
-            f.write("{}\n".format(json.dumps(region)))
+            f.write("{}\n".format(json.dumps(region, ensure_ascii=False)))
 
             if (
                 region["type"].lower() == "table"

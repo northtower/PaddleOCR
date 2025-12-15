@@ -83,6 +83,25 @@ python predict_system.py \
   --line_min_length=50 \
   --line_max_thickness=5
 
+-- new version (PP-OCRv5)
+# ⚠️ 重要：PP-OCRv5 必须使用 ppocrv5_dict.txt (18383字符)，而不是 ppocr_keys_v1.txt (6623字符)
+# 否则会报错: IndexError: list index out of range
+python predict_system.py \
+  --image_dir=/Users/zoutao03/codeBase/ocr/PaddleOCR/ppstructure/docs/img/0a4ad205277a55592971b5ebf7970cbb/image-3.jpg \
+  --det_model_dir=inference/new-version/PP-OCRv5_server_det_infer \
+  --rec_model_dir=inference/new-version/PP-OCRv5_server_rec_infer \
+  --table_model_dir=inference/new-version/SLANeXt_wired_infer \
+  --rec_char_dict_path=../ppocr/utils/dict/ppocrv5_dict.txt \
+  --table_char_dict_path=../ppocr/utils/dict/table_structure_dict_ch.txt \
+  --layout_model_dir=inference/picodet_lcnet_x1_0_fgd_layout_cdla_infer \
+  --layout_dict_path=../ppocr/utils/dict/layout_dict/layout_cdla_dict.txt \
+  --vis_font_path=../doc/fonts/chinese_cht.ttf \
+  --output=./output/ \
+  --return_word_box=True \
+  --enable_line_detection=True \
+  --enable_font_classifier=True \
+  --line_min_length=50 \
+  --line_max_thickness=5
 
 
 python predict_system.py \

@@ -165,6 +165,26 @@ def init_args():
         default=False,
         help="Whether return the bbox of each word (split by space) or chinese character. Only used in ppstructure for layout recovery",
     )
+    
+    # params for font classifier
+    parser.add_argument(
+        "--enable_font_classifier",
+        type=str2bool,
+        default=False,
+        help="Whether to enable font family classification",
+    )
+    parser.add_argument(
+        "--font_model_path",
+        type=str,
+        default="./inference/font_classifier/font_family.pdparams",
+        help="Path to font classification model",
+    )
+    parser.add_argument(
+        "--font_dict_path",
+        type=str,
+        default="./inference/font_classifier/font_family_dict.txt",
+        help="Path to font classification dictionary",
+    )
 
     return parser
 
@@ -407,7 +427,12 @@ def create_predictor(args, mode, logger):
                 config.enable_new_executor()
 
         # enable memory optim
-        config.enable_memory_optim()
+        # For JSON format models (like PP-OCRv5), disable memory optimization to avoid compatibility issues
+        if ".json" not in model_file_path:
+            config.enable_memory_optim()
+        else:
+            logger.info("JSON format model detected, skipping memory optimization")
+        
         config.disable_glog_info()
         if not args.use_gcu:  # for Enflame GCU(General Compute Unit)
             config.delete_pass("conv_transpose_eltwiseadd_bn_fuse_pass")
@@ -419,7 +444,13 @@ def create_predictor(args, mode, logger):
         if mode == "table":
             config.delete_pass("fc_fuse_pass")  # not supported for table
         config.switch_use_feed_fetch_ops(False)
-        config.switch_ir_optim(True)
+        
+        # For JSON format models (like PP-OCRv5), be more conservative with IR optimization
+        if ".json" in model_file_path:
+            logger.info("JSON format model detected, disabling IR optimization")
+            config.switch_ir_optim(False)
+        else:
+            config.switch_ir_optim(True)
 
         # create predictor
         predictor = inference.create_predictor(config)

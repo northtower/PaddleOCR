@@ -172,6 +172,7 @@ def init_args():
         default=True,
         help="Whether to filter lines that overlap with text regions",
     )
+    # Note: Font classifier params are already defined in tools/infer/utility.py
 
     return parser
 

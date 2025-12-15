@@ -41,6 +41,7 @@ from tools.infer.utility import (
     slice_generator,
     merge_fragmented,
 )
+from ppocr.utils.font_classifier import create_font_classifier
 
 logger = get_logger()
 
@@ -56,6 +57,10 @@ class TextSystem(object):
         self.drop_score = args.drop_score
         if self.use_angle_cls:
             self.text_classifier = predict_cls.TextClassifier(args)
+
+        # 初始化字体分类器
+        self.font_classifier = create_font_classifier(args)
+        self.enable_font_classifier = self.font_classifier is not None
 
         self.args = args
         self.crop_image_res_index = 0
@@ -74,7 +79,7 @@ class TextSystem(object):
         self.crop_image_res_index += bbox_num
 
     def __call__(self, img, cls=True, slice={}):
-        time_dict = {"det": 0, "rec": 0, "cls": 0, "all": 0}
+        time_dict = {"det": 0, "rec": 0, "cls": 0, "font": 0, "all": 0}
 
         if img is None:
             logger.debug("no valid image provided")
@@ -146,6 +151,22 @@ class TextSystem(object):
         logger.debug("rec_res num  : {}, elapsed : {}".format(len(rec_res), elapse))
         if self.args.save_crop_res:
             self.draw_crop_rec_res(self.args.crop_res_save_dir, img_crop_list, rec_res)
+        
+        # 字体分类 - 在过滤之前先给所有结果添加字体信息
+        font_res = []
+        if self.enable_font_classifier:
+            font_start = time.time()
+            font_res = self.font_classifier.predict_batch(img_crop_list)
+            font_elapse = time.time() - font_start
+            time_dict["font"] = font_elapse
+            logger.debug("font_res num : {}, elapsed : {}".format(len(font_res), font_elapse))
+            
+            # 将字体信息添加到识别结果中
+            for idx in range(len(rec_res)):
+                if idx < len(font_res) and font_res[idx] is not None:
+                    # 将 rec_res 转换为列表并添加字体信息
+                    rec_res[idx] = list(rec_res[idx]) + [font_res[idx]]
+        
         filter_boxes, filter_rec_res = [], []
         for box, rec_result in zip(dt_boxes, rec_res):
             text, score = rec_result[0], rec_result[1]
@@ -238,16 +259,30 @@ def main(args):
                 logger.debug(
                     str(idx) + "  Predict time of %s: %.3fs" % (image_file, elapse)
                 )
-            for text, score in rec_res:
+            for rec_result in rec_res:
+                text = rec_result[0]
+                score = rec_result[1]
                 logger.debug("{}, {:.3f}".format(text, score))
+                # 如果包含字体信息，也打印出来
+                if len(rec_result) > 3 and isinstance(rec_result[3], dict):
+                    font_info = rec_result[3]
+                    logger.debug("  Font: {}, Confidence: {:.3f}".format(
+                        font_info.get('class_name', 'unknown'),
+                        font_info.get('confidence', 0.0)
+                    ))
 
-            res = [
-                {
+            res = []
+            for i in range(len(dt_boxes)):
+                result_dict = {
                     "transcription": rec_res[i][0],
                     "points": np.array(dt_boxes[i]).astype(np.int32).tolist(),
                 }
-                for i in range(len(dt_boxes))
-            ]
+                # 如果包含字体信息，添加到结果中
+                if len(rec_res[i]) > 3 and isinstance(rec_res[i][3], dict):
+                    font_info = rec_res[i][3]
+                    result_dict["font_family"] = font_info.get("class_name", "unknown")
+                    result_dict["font_confidence"] = font_info.get("confidence", 0.0)
+                res.append(result_dict)
             if len(imgs) > 1:
                 save_pred = (
                     os.path.basename(image_file)

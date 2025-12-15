@@ -3,7 +3,7 @@ scikit-image
 pyclipper
 lmdb
 tqdm
-numpy
+numpy<2.0,>=1.19.0
 rapidfuzz
 opencv-python
 opencv-contrib-python
@@ -11,7 +11,7 @@ cython
 Pillow
 pyyaml
 requests
-albumentations
+albumentations<2.0.0
 # to be compatible with albumentations
-albucore
+albucore<0.0.20
 packaging
