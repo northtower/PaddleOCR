@@ -18,7 +18,7 @@
         <link rel="prev" href="../algorithm/PaddleOCR-VL/PaddleOCR-VL.html">
       
       
-        <link rel="next" href="PaddleOCR-VL-XPU.html">
+        <link rel="next" href="PaddleOCR-VL-Kunlunxin-XPU.html">
       
       
         
@@ -29,15 +29,15 @@
       
       
       <link rel="icon" href="../../../version3.x/logo.jpg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Environment Configuration Tutorial - PaddleOCR Documentation</title>
+        <title>PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Usage Tutorial - PaddleOCR Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -182,7 +182,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#paddleocr-vl-nvidia-blackwell-architecture-gpus-environment-configuration-tutorial" class="md-skip">
+        <a href="#paddleocr-vl-nvidia-blackwell-architecture-gpus-usage-tutorial" class="md-skip">
           Skip to content
         </a>
       
@@ -233,7 +233,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Environment Configuration Tutorial
+              PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Usage Tutorial
             
           </span>
         </div>
@@ -526,7 +526,7 @@ You're not viewing the latest version.
   
     
   
-  Model Deploy
+  Inference and Deployment
 
         </a>
       </li>
@@ -574,6 +574,38 @@ You're not viewing the latest version.
 
         </a>
       </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../data_anno_synth/x_anylabeling.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Data Annotation and Synthesis & Datasets
+
+        </a>
+      </li>
+    
+  
+
     
   
 
@@ -637,28 +669,6 @@ You're not viewing the latest version.
     
   
   All-in-One Development
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../data_anno_synth/overview.html" class="md-tabs__link">
-          
-  
-  
-    
-  
-  Data Annotation and Synthesis & Datasets
 
         </a>
       </li>
@@ -899,6 +909,8 @@ You're not viewing the latest version.
     
       
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1048,6 +1060,8 @@ You're not viewing the latest version.
     
       
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1168,6 +1182,8 @@ You're not viewing the latest version.
     
     
       
+      
+        
       
     
     
@@ -1293,6 +1309,20 @@ You're not viewing the latest version.
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1300,6 +1330,8 @@ You're not viewing the latest version.
         
         
       
+      
+        
       
     
     
@@ -1374,6 +1406,34 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
+      <a href="../algorithm/PaddleOCR-VL/PaddleOCR-VL-1.5.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL-1.5 Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../algorithm/PaddleOCR-VL/PaddleOCR-VL.html" class="md-nav__link">
         
   
@@ -1418,7 +1478,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Environment Configuration Tutorial
+    PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Usage Tutorial
   
 
     
@@ -1436,7 +1496,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Environment Configuration Tutorial
+    PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Usage Tutorial
   
 
     
@@ -1460,6 +1520,17 @@ You're not viewing the latest version.
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-guide-for-this-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Guide for This Hardware
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#1-environment-preparation" class="md-nav__link">
@@ -1512,15 +1583,15 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-improving-vlm-inference-performance-using-inference-acceleration-frameworks" class="md-nav__link">
+  <a href="#3-improving-inference-performance-with-vlm-inference-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Improving VLM Inference Performance Using Inference Acceleration Frameworks
+        3. Improving Inference Performance with VLM Inference Services
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Improving VLM Inference Performance Using Inference Acceleration Frameworks">
+    <nav class="md-nav" aria-label="3. Improving Inference Performance with VLM Inference Services">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1567,6 +1638,17 @@ You're not viewing the latest version.
     <span class="md-ellipsis">
       
         3.2 Client Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-performance-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Performance Tuning
       
     </span>
   </a>
@@ -1666,14 +1748,14 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="PaddleOCR-VL-XPU.html" class="md-nav__link">
+      <a href="PaddleOCR-VL-Kunlunxin-XPU.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PaddleOCR-VL XPU Environment Configuration Tutorial
+    PaddleOCR-VL Kunlunxin XPU Usage Tutorial
   
 
     
@@ -1694,14 +1776,182 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="PaddleOCR-VL-DCU.html" class="md-nav__link">
+      <a href="PaddleOCR-VL-Hygon-DCU.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PaddleOCR-VL DCU Environment Configuration Tutorial
+    PaddleOCR-VL Hygon DCU Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-MetaX-GPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL MetaX GPU Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-Iluvatar-GPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL Iluvatar GPU Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-Huawei-Ascend-NPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL Huawei Ascend NPU Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-Apple-Silicon.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL Apple Silicon Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-AMD-GPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL AMD GPU Usage Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PaddleOCR-VL-Intel-Arc-GPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR-VL Intel Arc GPU Usage Tutorial
   
 
     
@@ -1749,10 +1999,18 @@ You're not viewing the latest version.
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
       
+      
+        
       
     
     
@@ -1772,7 +2030,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Model Deploy
+    Inference and Deployment
   
 
     
@@ -1788,7 +2046,7 @@ You're not viewing the latest version.
             <span class="md-nav__icon md-icon"></span>
             
   
-    Model Deploy
+    Inference and Deployment
   
 
           </label>
@@ -1892,7 +2150,35 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Sever Deployment
+    Server Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/browser.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Deployment
   
 
     
@@ -1921,6 +2207,34 @@ You're not viewing the latest version.
     
   
     MCP Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/skills.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Skills
   
 
     
@@ -2008,6 +2322,8 @@ You're not viewing the latest version.
     
       
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -2016,10 +2332,10 @@ You're not viewing the latest version.
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_10" >
         
           
-          <label class="md-nav__link" for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_10" id="__nav_8_10_label" tabindex="0">
             
   
   
@@ -2037,8 +2353,8 @@ You're not viewing the latest version.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_8">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2140,6 +2456,34 @@ You're not viewing the latest version.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inference_engine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inference Engine and Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2190,6 +2534,8 @@ You're not viewing the latest version.
     
     
       
+      
+        
       
     
     
@@ -2686,6 +3032,8 @@ You're not viewing the latest version.
     
       
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -2908,7 +3256,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    PP-DocTranslation产线
+    PP-DocTranslation Pipeline
   
 
     
@@ -2948,6 +3296,8 @@ You're not viewing the latest version.
     
     
       
+      
+        
       
     
     
@@ -2967,7 +3317,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Multi-Devices Usage
+    Data Annotation and Synthesis & Datasets
   
 
     
@@ -2983,441 +3333,6 @@ You're not viewing the latest version.
             <span class="md-nav__icon md-icon"></span>
             
   
-    Multi-Devices Usage
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../other_devices_support/multi_devices_use_guide.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PaddleOCR Multi-Devices Usage Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../other_devices_support/paddlepaddle_install_NPU.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Ascend NPU PaddlePaddle Installation Tutorial
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../other_devices_support/paddlepaddle_install_XPU.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Kunlun XPU PaddlePaddle Installation Tutorial
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
-        
-          
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Other Notes
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Other Notes
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../paddleocr_and_paddlex.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PaddleOCR and PaddleX
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../update/upgrade_notes.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PaddleOCR 3.x Upgrade Notes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../logging.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configure the logging system for the PaddleOCR inference package
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
-        
-          
-          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    All-in-One Development
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_13">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    All-in-One Development
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../paddlex/overview.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../paddlex/quick_start.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Start
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
-        
-          
-          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Annotation and Synthesis & Datasets
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_14">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
     Data Annotation and Synthesis & Datasets
   
 
@@ -3430,15 +3345,75 @@ You're not viewing the latest version.
   
   
   
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_1" id="__nav_11_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Annotation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data Annotation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../data_anno_synth/overview.html" class="md-nav__link">
+      <a href="../../data_anno_synth/x_anylabeling.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Overview
+    Document Parsing with X-AnyLabeling
   
 
     
@@ -3466,7 +3441,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Other data annotation tools
+    Other Data Annotation Tools
   
 
     
@@ -3479,6 +3454,72 @@ You're not viewing the latest version.
   
 
               
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Synthesis
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data Synthesis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -3494,7 +3535,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Others data synthesis tools
+    Data Synthesis Tools
   
 
     
@@ -3507,6 +3548,82 @@ You're not viewing the latest version.
   
 
               
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_11_3" id="__nav_11_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Datasets
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -3682,6 +3799,443 @@ You're not viewing the latest version.
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Devices Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multi-Devices Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../other_devices_support/multi_devices_use_guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR Multi-Devices Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../other_devices_support/paddlepaddle_install_NPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ascend NPU PaddlePaddle Installation Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../other_devices_support/paddlepaddle_install_XPU.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kunlun XPU PaddlePaddle Installation Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Other Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Other Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paddleocr_and_paddlex.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR and PaddleX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../update/upgrade_notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PaddleOCR 3.x Upgrade Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logging.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure logging for the paddleocr Python package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    All-in-One Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    All-in-One Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paddlex/overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paddlex/quick_start.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -3747,6 +4301,8 @@ You're not viewing the latest version.
     
     
       
+      
+        
       
     
     
@@ -3923,7 +4479,7 @@ You're not viewing the latest version.
   <span class="md-ellipsis">
     
   
-    Sever Deployment
+    Server Deployment
   
 
     
@@ -4129,6 +4685,8 @@ You're not viewing the latest version.
     
       
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -4259,6 +4817,17 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#workflow-guide-for-this-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Guide for This Hardware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-environment-preparation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4309,15 +4878,15 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-improving-vlm-inference-performance-using-inference-acceleration-frameworks" class="md-nav__link">
+  <a href="#3-improving-inference-performance-with-vlm-inference-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Improving VLM Inference Performance Using Inference Acceleration Frameworks
+        3. Improving Inference Performance with VLM Inference Services
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Improving VLM Inference Performance Using Inference Acceleration Frameworks">
+    <nav class="md-nav" aria-label="3. Improving Inference Performance with VLM Inference Services">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4364,6 +4933,17 @@ You're not viewing the latest version.
     <span class="md-ellipsis">
       
         3.2 Client Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-performance-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Performance Tuning
       
     </span>
   </a>
@@ -4514,8 +5094,13 @@ You're not viewing the latest version.
 
 
 <!-- Page content -->
-<h1 id="paddleocr-vl-nvidia-blackwell-architecture-gpus-environment-configuration-tutorial">PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Environment Configuration Tutorial<a class="headerlink" href="#paddleocr-vl-nvidia-blackwell-architecture-gpus-environment-configuration-tutorial" title="Permanent link">&para;</a></h1>
-<p>This tutorial provides guidance on configuring the environment for NVIDIA Blackwell-architecture GPUs. After completing the environment setup, please refer to the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a> to use PaddleOCR-VL.</p>
+<h1 id="paddleocr-vl-nvidia-blackwell-architecture-gpus-usage-tutorial">PaddleOCR-VL NVIDIA Blackwell-Architecture GPUs Usage Tutorial<a class="headerlink" href="#paddleocr-vl-nvidia-blackwell-architecture-gpus-usage-tutorial" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>
+Unless otherwise specified, the term "PaddleOCR-VL" in this tutorial refers to the PaddleOCR-VL model series (e.g., PaddleOCR-VL-1.5). References specific to the PaddleOCR-VL v1 version will be explicitly noted.</p>
+</div>
+<p>This tutorial provides guidance on using PaddleOCR-VL on NVIDIA Blackwell-architecture GPUs, covering the complete workflow from environment preparation to service deployment.</p>
 <p>NVIDIA Blackwell-architecture GPUs include, but are not limited to:</p>
 <ul>
 <li>RTX 5090</li>
@@ -4524,8 +5109,65 @@ You're not viewing the latest version.
 <li>RTX 5060、RTX 5060 Ti</li>
 <li>RTX 5050</li>
 </ul>
+<p>PaddleOCR-VL has been verified for accuracy and speed on the RTX 5070. However, due to hardware diversity, compatibility with other NVIDIA Blackwell-architecture GPUs has not yet been confirmed. We welcome the community to test on different hardware setups and share your results.</p>
 <p>Before starting the tutorial, <strong>please ensure that your NVIDIA driver supports CUDA 12.9 or higher</strong>.</p>
+<h2 id="workflow-guide-for-this-hardware">Workflow Guide for This Hardware<a class="headerlink" href="#workflow-guide-for-this-hardware" title="Permanent link">&para;</a></h2>
+<p>Use this guide for the workflows below.</p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Support on this hardware</th>
+<th>Read this section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local direct inference</td>
+<td>Supported</td>
+<td>Read Section 1. Environment Preparation and Section 2. Quick Start.</td>
+</tr>
+<tr>
+<td>Client + VLM inference service</td>
+<td>Supported</td>
+<td>Complete local direct inference first, then read Section 3. Improving Inference Performance with VLM Inference Services.</td>
+</tr>
+<tr>
+<td>Full API service</td>
+<td>Supported with Docker Compose or manual deployment</td>
+<td>Use Section 4.1 for Docker Compose, or Section 4.2 for manual deployment (complete Section 1. Environment Preparation first), then continue with the Section 4.3 client invocation section and the Section 4.4 pipeline configuration section.</td>
+</tr>
+<tr>
+<td>Model fine-tuning</td>
+<td>Supported</td>
+<td>Read Section 5. Model Fine-Tuning.</td>
+</tr>
+</tbody>
+</table>
+<p>If you only need to confirm which inference methods are available on this hardware, refer to the <a href="PaddleOCR-VL.html#inference-device-support-for-paddleocr-vl">PaddleOCR-VL Inference Method and Hardware Support Matrix</a> in the main guide.</p>
 <h2 id="1-environment-preparation">1. Environment Preparation<a class="headerlink" href="#1-environment-preparation" title="Permanent link">&para;</a></h2>
+<p><strong>Environment Setup Methods Supported on This Hardware</strong></p>
+<table>
+<thead>
+<tr>
+<th>Environment setup method</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Official Docker image</td>
+<td>Supported with steps in this guide</td>
+<td>Continue with Section 1.1.</td>
+</tr>
+<tr>
+<td>Manually install PaddlePaddle and PaddleOCR</td>
+<td>Supported with steps in this guide</td>
+<td>Continue with Section 1.2.</td>
+</tr>
+</tbody>
+</table>
 <p>This section introduces how to set up the PaddleOCR-VL runtime environment using one of the following two methods:</p>
 <ul>
 <li>
@@ -4535,6 +5177,7 @@ You're not viewing the latest version.
 <p>Method 2: Manually install PaddlePaddle and PaddleOCR.</p>
 </li>
 </ul>
+<p><strong>We strongly recommend using the Docker image to minimize potential environment-related issues.</strong></p>
 <h3 id="11-method-1-using-docker-image">1.1 Method 1: Using Docker Image<a class="headerlink" href="#11-method-1-using-docker-image" title="Permanent link">&para;</a></h3>
 <p>We recommend using the official Docker image (requires Docker version &gt;= 19.03, GPU-equipped machine with NVIDIA driver supporting CUDA 12.9 or higher):</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
@@ -4542,13 +5185,22 @@ You're not viewing the latest version.
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span>--gpus<span class="w"> </span>all<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span>--network<span class="w"> </span>host<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span>--user<span class="w"> </span>root<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-gpu-sm120<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-nvidia-gpu-sm120<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span>/bin/bash
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Call PaddleOCR CLI or Python API in the container</span>
 </span></code></pre></div>
-<p>If you wish to use PaddleOCR-VL in an offline environment, replace <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-gpu-sm120</code> (image size ~10 GB) in the above command with the offline version image <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-gpu-sm120-offline</code> (image size ~12 GB).</p>
+<p>If you wish to use PaddleOCR-VL in an offline environment, replace <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-nvidia-gpu-sm120</code> (image size approximately 10 GB) in the above command with the offline version image <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:latest-nvidia-gpu-sm120-offline</code> (image size approximately 12 GB).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>
+Images with the <code>latest-xxx</code> tag correspond to the latest version.
+If the corresponding <code>latest</code> image already exists locally and you want the newest features or fixes, we recommend running <code>docker pull</code> again before using it.
+If you want to use an image corresponding to a specific PaddleOCR version, you can replace <code>latest</code> in the tag with the desired version number: <code>paddleocr&lt;major&gt;.&lt;minor&gt;</code>.
+For example:
+<code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-vl:paddleocr3.3-nvidia-gpu-sm120-offline</code></p>
+</div>
 <h3 id="12-method-2-manually-install-paddlepaddle-and-paddleocr">1.2 Method 2: Manually Install PaddlePaddle and PaddleOCR<a class="headerlink" href="#12-method-2-manually-install-paddlepaddle-and-paddleocr" title="Permanent link">&para;</a></h3>
-<p>If Docker is not an option, you can manually install PaddlePaddle and PaddleOCR. Python version 3.8–3.12 is required.</p>
+<p>If Docker is not an option, you can manually install PaddlePaddle and PaddleOCR. This guide documents Python 3.9–3.13 as the verified range.</p>
 <p><strong>We strongly recommend installing PaddleOCR-VL in a virtual environment to avoid dependency conflicts.</strong> For example, create a virtual environment using Python's standard venv library:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Create a virtual environment</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv_paddleocr
@@ -4559,19 +5211,47 @@ You're not viewing the latest version.
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Note that PaddlePaddle for cu129 is being installed here</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>paddlepaddle-gpu<span class="o">==</span><span class="m">3</span>.2.1<span class="w"> </span>-i<span class="w"> </span>https://www.paddlepaddle.org.cn/packages/stable/cu129/
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span><span class="s2">&quot;paddleocr[doc-parser]&quot;</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># For Linux systems, run:</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://paddle-whl.bj.bcebos.com/nightly/cu126/safetensors/safetensors-0.6.2.dev0-cp38-abi3-linux_x86_64.whl
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># For Windows systems, run:</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>https://xly-devops.cdn.bcebos.com/safetensors-nightly/safetensors-0.6.2.dev0-cp38-abi3-win_amd64.whl
 </span></code></pre></div>
 <blockquote>
-<p><strong>Please ensure that PaddlePaddle framework version 3.2.1 or higher is installed, along with the special version of safetensors.</strong></p>
+<p><strong>Please ensure that PaddlePaddle framework version 3.2.1 or higher is installed.</strong></p>
 </blockquote>
 <h2 id="2-quick-start">2. Quick Start<a class="headerlink" href="#2-quick-start" title="Permanent link">&para;</a></h2>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
-<h2 id="3-improving-vlm-inference-performance-using-inference-acceleration-frameworks">3. Improving VLM Inference Performance Using Inference Acceleration Frameworks<a class="headerlink" href="#3-improving-vlm-inference-performance-using-inference-acceleration-frameworks" title="Permanent link">&para;</a></h2>
-<p>The inference performance under default configurations may not be fully optimized and may not meet actual production requirements. This section introduces how to use the vLLM and SGLang inference acceleration frameworks to enhance PaddleOCR-VL's inference performance.</p>
+<p>Please refer to <a href="PaddleOCR-VL.html#2-quick-start">PaddleOCR-VL Usage Tutorial - 2. Quick Start</a>.</p>
+<h2 id="3-improving-inference-performance-with-vlm-inference-services">3. Improving Inference Performance with VLM Inference Services<a class="headerlink" href="#3-improving-inference-performance-with-vlm-inference-services" title="Permanent link">&para;</a></h2>
+<p>The inference performance under default configurations may not be fully optimized and may not meet actual production requirements. This section introduces how to improve PaddleOCR-VL inference performance through a VLM inference service. In this hardware-specific guide, the examples use vLLM and SGLang as the backends for the VLM inference service.</p>
 <h3 id="31-starting-the-vlm-inference-service">3.1 Starting the VLM Inference Service<a class="headerlink" href="#31-starting-the-vlm-inference-service" title="Permanent link">&para;</a></h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>
+The service started according to this section is responsible only for the VLM inference stage in the PaddleOCR-VL workflow. It does not provide a complete end-to-end document parsing API. We strongly recommend that you do not call this service directly via HTTP requests or OpenAI clients to process document images. If you need to deploy a service with the full PaddleOCR-VL capabilities, refer to the service deployment section later in this document.</p>
+</div>
+<p><strong>Launch Methods Supported on This Hardware</strong></p>
+<table>
+<thead>
+<tr>
+<th>Launch method</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Official Docker image</td>
+<td>Supported with steps in this guide</td>
+<td>Continue with Section 3.1.1.</td>
+</tr>
+<tr>
+<td>Install dependencies with the PaddleOCR CLI and launch the service</td>
+<td>Supported with steps in this guide</td>
+<td>Continue with Section 3.1.2.</td>
+</tr>
+<tr>
+<td>Launch the service directly with the acceleration framework</td>
+<td>Not currently supported</td>
+<td>This hardware does not currently support this path.</td>
+</tr>
+</tbody>
+</table>
 <p>There are two methods to start the VLM inference service; choose one:</p>
 <ul>
 <li>
@@ -4581,17 +5261,17 @@ You're not viewing the latest version.
 <p>Method 2: Manually install dependencies and start the service via PaddleOCR CLI.</p>
 </li>
 </ul>
+<p><strong>We strongly recommend using the Docker image to minimize potential environment-related issues.</strong></p>
 <h4 id="311-method-1-using-docker-image">3.1.1 Method 1: Using Docker Image<a class="headerlink" href="#311-method-1-using-docker-image" title="Permanent link">&para;</a></h4>
 <p>PaddleOCR provides a Docker image for quickly starting the vLLM inference service. Use the following command to start the service (requires Docker version &gt;= 19.03, GPU-equipped machine with NVIDIA driver supporting CUDA 12.9 or higher):</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>-it<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--rm<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--gpus<span class="w"> </span>all<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span>--network<span class="w"> </span>host<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-gpu-sm120<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-0.9B<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span><span class="w"> </span>--backend<span class="w"> </span>vllm
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--gpus<span class="w"> </span>all<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--network<span class="w"> </span>host<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-nvidia-gpu-sm120<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-1.5-0.9B<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span><span class="w"> </span>--backend<span class="w"> </span>vllm
 </span></code></pre></div>
-<p>If you wish to start the service in an offline environment, replace <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-gpu-sm120</code> (image size ~12 GB) in the above command with the offline version image <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-gpu-sm120-offline</code> (image size ~14 GB).</p>
+<p>If you wish to start the service in an offline environment, replace <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-nvidia-gpu-sm120</code> (image size approximately 13 GB) in the above command with the offline version image <code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-nvidia-gpu-sm120-offline</code> (image size approximately 15 GB).</p>
 <p>When launching the vLLM inference service, we provide a set of default parameter settings. If you need to adjust parameters such as GPU memory usage, you can configure additional parameters yourself. Please refer to <a href="PaddleOCR-VL.html#331-server-side-parameter-adjustment">3.3.1 Server-side Parameter Adjustment</a> to create a configuration file, then mount the file into the container and specify the configuration file using <code>backend_config</code> in the command to start the service, for example:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span>-it<span class="w"> </span><span class="se">\</span>
@@ -4599,30 +5279,44 @@ You're not viewing the latest version.
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span>--gpus<span class="w"> </span>all<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span>--network<span class="w"> </span>host<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>-v<span class="w"> </span>vllm_config.yml:/tmp/vllm_config.yml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-gpu-sm120<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-0.9B<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span><span class="w"> </span>--backend<span class="w"> </span>vllm<span class="w"> </span>--backend_config<span class="w"> </span>/tmp/vllm_config.yml
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:latest-nvidia-gpu-sm120<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-1.5-0.9B<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span><span class="w"> </span>--backend<span class="w"> </span>vllm<span class="w"> </span>--backend_config<span class="w"> </span>/tmp/vllm_config.yml
 </span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>
+Images with the <code>latest-xxx</code> tag correspond to the latest version.
+If the corresponding <code>latest</code> image already exists locally and you want the newest features or fixes, we recommend running <code>docker pull</code> again before using it.
+If you want to use an image corresponding to a specific PaddleOCR version, you can replace <code>latest</code> in the tag with the desired version number: <code>paddleocr&lt;major&gt;.&lt;minor&gt;</code>.
+For example:
+<code>ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddleocr-genai-vllm-server:paddleocr3.3-nvidia-gpu-sm120-offline</code></p>
+</div>
 <h4 id="312-method-2-installation-and-usage-via-paddleocr-cli">3.1.2 Method 2: Installation and Usage via PaddleOCR CLI<a class="headerlink" href="#312-method-2-installation-and-usage-via-paddleocr-cli" title="Permanent link">&para;</a></h4>
-<p>Since inference acceleration frameworks may have dependency conflicts with the PaddlePaddle framework, installation in a virtual environment is recommended. Taking vLLM as an example:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># If there is an active virtual environment, deactivate it first using `deactivate`</span>
+<p>Since inference acceleration frameworks may conflict with packages already installed in the current environment, it is recommended to install them in a virtual environment:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># If a virtual environment is currently activated, deactivate it first using `deactivate`</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># Create a virtual environment</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv_vlm
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Activate the environment</span>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nb">source</span><span class="w"> </span>.venv_vlm/bin/activate
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Install PaddleOCR</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;paddleocr[doc-parser]&quot;</span><span class="c1"># Install dependencies for inference acceleration services</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>paddleocr<span class="w"> </span>install_genai_server_deps<span class="w"> </span>vllm
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>flash-attn<span class="o">==</span><span class="m">2</span>.8.3
 </span></code></pre></div>
-<blockquote>
-<p>The <code>paddleocr install_genai_server_deps</code> command may require CUDA compilation tools such as nvcc during execution. If these tools are not available in your environment or the installation takes too long, you can obtain a pre-compiled version of FlashAttention from <a href="https://github.com/mjun0812/flash-attention-prebuild-wheels">this repository</a>. For example, run <code>python -m pip install https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.3.14/flash_attn-2.8.2+cu128torch2.8-cp310-cp310-linux_x86_64.whl</code>.</p>
-</blockquote>
+<p>vLLM and SGLang depend on FlashAttention, and installing FlashAttention may require CUDA compilation tools such as <code>nvcc</code>. If these tools are not available in your environment (for example, when using the <code>paddleocr-vl</code> image), you can obtain a prebuilt FlashAttention package (version 2.8.3 required) from <a href="https://github.com/mjun0812/flash-attention-prebuild-wheels">this repository</a>, install it first, and then proceed with subsequent commands. For example, in the <code>paddleocr-vl</code> image, run <code>python -m pip install https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.3.14/flash_attn-2.8.3+cu128torch2.8-cp310-cp310-linux_x86_64.whl</code>. This step is not required for FastDeploy.</p>
+<p>Install PaddleOCR and the dependencies of inference acceleration services, using vLLM as an example:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Install PaddleOCR</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;paddleocr[doc-parser]&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Install inference acceleration service dependencies</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>paddleocr<span class="w"> </span>install_genai_server_deps<span class="w"> </span>vllm
+</span></code></pre></div>
 <p>Usage of the <code>paddleocr install_genai_server_deps</code> command:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>paddleocr<span class="w"> </span>install_genai_server_deps<span class="w"> </span>&lt;inference<span class="w"> </span>acceleration<span class="w"> </span>framework<span class="w"> </span>name&gt;
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>paddleocr<span class="w"> </span>install_genai_server_deps<span class="w"> </span>&lt;inference<span class="w"> </span>acceleration<span class="w"> </span>framework<span class="w"> </span>name&gt;
 </span></code></pre></div>
 <p>Currently supported framework names are <code>vllm</code> and <code>sglang</code>, corresponding to vLLM and SGLang, respectively.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>
+The transformers library versions required by vLLM, SGLang and Transformers engine are currently incompatible, so Transformers engine cannot be installed together with vLLM or SGLang in the same environment. If using Transformers + vLLM or Transformers + SGLang inference, please deploy the layout analysis model and VLM service in different environments.</p>
+</div>
 <p>After installation, you can start the service using the <code>paddleocr genai_server</code> command:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-0.9B<span class="w"> </span>--backend<span class="w"> </span>vllm<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>paddleocr<span class="w"> </span>genai_server<span class="w"> </span>--model_name<span class="w"> </span>PaddleOCR-VL-1.5-0.9B<span class="w"> </span>--backend<span class="w"> </span>vllm<span class="w"> </span>--port<span class="w"> </span><span class="m">8118</span>
 </span></code></pre></div>
 <p>The parameters supported by this command are as follows:</p>
 <table>
@@ -4660,8 +5354,32 @@ You're not viewing the latest version.
 </tbody>
 </table>
 <h3 id="32-client-usage">3.2 Client Usage<a class="headerlink" href="#32-client-usage" title="Permanent link">&para;</a></h3>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
+<p>For client-side invocation methods, please refer to <a href="PaddleOCR-VL.html#32-client-usage-methods">PaddleOCR-VL Usage Tutorial - 3.2 Client Usage Methods</a>. If you run the client on this hardware, make sure to specify <code>device="gpu"</code>.</p>
+<h3 id="33-performance-tuning">3.3 Performance Tuning<a class="headerlink" href="#33-performance-tuning" title="Permanent link">&para;</a></h3>
+<p>Please refer to <a href="PaddleOCR-VL.html#33-performance-tuning">PaddleOCR-VL Usage Tutorial - 3.3 Performance Tuning</a>.</p>
 <h2 id="4-service-deployment">4. Service Deployment<a class="headerlink" href="#4-service-deployment" title="Permanent link">&para;</a></h2>
+<p><strong>Deployment Methods Supported on This Hardware</strong></p>
+<table>
+<thead>
+<tr>
+<th>Deployment method</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker Compose deployment</td>
+<td>Supported with steps in this guide</td>
+<td>Continue with Section 4.1.</td>
+</tr>
+<tr>
+<td>Manual deployment</td>
+<td>Supported; steps are in the main guide</td>
+<td>Complete Section 1. Environment Preparation first, then continue with Section 4.2 and follow the shared manual deployment guidance in the main guide.</td>
+</tr>
+</tbody>
+</table>
 <p>This section mainly introduces how to deploy PaddleOCR-VL as a service and invoke it. There are two methods available; choose one:</p>
 <ul>
 <li>
@@ -4671,24 +5389,27 @@ You're not viewing the latest version.
 <p>Method 2: Manually install dependencies for deployment.</p>
 </li>
 </ul>
-<p>Please note that the PaddleOCR-VL service introduced in this section differs from the VLM inference service in the previous section: the latter is responsible for only one part of the complete process (i.e., VLM inference) and is called as an underlying service by the former.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>
+The PaddleOCR-VL service introduced in this section differs from the VLM inference service in the previous section: the latter is responsible for only one part of the complete process (i.e., VLM inference) and is called as an underlying service by the former.</p>
+</div>
 <h3 id="41-method-1-deploy-using-docker-compose">4.1 Method 1: Deploy Using Docker Compose<a class="headerlink" href="#41-method-1-deploy-using-docker-compose" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p>Copy the content from <a href="https://github.com/PaddlePaddle/PaddleOCR/blob/main/deploy/paddleocr_vl_docker/compose.yaml">here</a> and save it as a <code>compose.yaml</code> file.</p>
-</li>
-<li>
-<p>Copy the following content and save it as a <code>.env</code> file:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>API_IMAGE_TAG_SUFFIX=latest-gpu-sm120-offline
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>VLM_BACKEND=vllm
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>VLM_IMAGE_TAG_SUFFIX=latest-gpu-sm120-offline
-</span></code></pre></div>
+<p>Download the Compose file and the environment variable configuration file separately from <a href="https://github.com/PaddlePaddle/PaddleOCR/blob/main/deploy/paddleocr_vl_docker/accelerators/nvidia-gpu-sm120/compose.yaml">here</a> and <a href="https://github.com/PaddlePaddle/PaddleOCR/blob/main/deploy/paddleocr_vl_docker/accelerators/nvidia-gpu-sm120/.env">here</a> to your local machine.</p>
 </li>
 <li>
 <p>Execute the following command in the directory containing the <code>compose.yaml</code> and <code>.env</code> files to start the server, which will listen on port <strong>8080</strong> by default:</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Must be executed in the directory containing compose.yaml and .env files</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>up
 </span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>
+The image tags used by <code>compose.yaml</code> are usually controlled by <code>API_IMAGE_TAG_SUFFIX</code> and <code>VLM_IMAGE_TAG_SUFFIX</code> in <code>.env</code>, and default to tags such as <code>latest-nvidia-gpu-offline</code>. To make sure you pull the newest <code>latest</code> images, run <code>docker compose pull</code> in the current directory before <code>docker compose up</code>.
+To use an image corresponding to a specific PaddleOCR version, replace <code>latest</code> in these variables with <code>paddleocr&lt;major&gt;.&lt;minor&gt;</code>, for example <code>paddleocr3.3-nvidia-gpu-offline</code>.</p>
+</div>
 <p>After startup, you will see output similar to the following:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>paddleocr-vl-api             | INFO:     Started server process [1]
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>paddleocr-vl-api             | INFO:     Waiting for application startup.
@@ -4755,14 +5476,14 @@ Edit <code>environment</code> in the <code>compose.yaml</code> file to change th
 <details>
 <summary>3. Adjust VLM server-side configuration</summary>
 
-If you want to adjust the VLM server configuration, refer to <a href="./PaddleOCR-VL.en.md#331-server-parameter-adjustment">3.3.1 Server Parameter Adjustment</a> to generate a configuration file.
+If you want to adjust the VLM server configuration, refer to <a href="./PaddleOCR-VL.en.md#331-server-side-parameter-adjustment">3.3.1 Server Parameter Adjustment</a> to generate a configuration file.
 
 After generating the configuration file, add the following <code>paddleocr-vlm-server.volumes</code> and <code>paddleocr-vlm-server.command</code> fields to your <code>compose.yaml</code>. Replace <code>/path/to/your_config.yaml</code> with your actual configuration file path.
 
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="w">  </span><span class="nt">paddleocr-vlm-server</span><span class="p">:</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/your_config.yaml:/home/paddleocr/vlm_server_config.yaml</span>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">paddleocr genai_server --model_name PaddleOCR-VL-0.9B --host 0.0.0.0 --port 8118 --backend vllm --backend_config /home/paddleocr/vlm_server_config.yaml</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">paddleocr genai_server --model_name PaddleOCR-VL-1.5-0.9B --host 0.0.0.0 --port 8118 --backend vllm --backend_config /home/paddleocr/vlm_server_config.yaml</span>
 </span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 </span></code></pre></div>
 
@@ -4776,13 +5497,13 @@ Refer to the <a href="./PaddleOCR-VL.en.md#44-pipeline-configuration-adjustment-
 </details>
 
 <h3 id="42-method-2-manually-deployment">4.2 Method 2: Manually Deployment<a class="headerlink" href="#42-method-2-manually-deployment" title="Permanent link">&para;</a></h3>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
+<p>Please complete Section 1. Environment Preparation first, then refer to <a href="PaddleOCR-VL.html#42-method-2-manual-deployment">PaddleOCR-VL Usage Tutorial - 4.2 Method 2: Manual Deployment</a>.</p>
 <h3 id="43-client-invocation-methods">4.3 Client Invocation Methods<a class="headerlink" href="#43-client-invocation-methods" title="Permanent link">&para;</a></h3>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
+<p>Please refer to <a href="PaddleOCR-VL.html#43-client-side-invocation">PaddleOCR-VL Usage Tutorial - 4.3 Client Invocation Methods</a>.</p>
 <h3 id="44-pipeline-configuration-adjustment-instructions">4.4 Pipeline Configuration Adjustment Instructions<a class="headerlink" href="#44-pipeline-configuration-adjustment-instructions" title="Permanent link">&para;</a></h3>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
+<p>Please refer to <a href="PaddleOCR-VL.html#44-pipeline-configuration-adjustment-instructions">PaddleOCR-VL Usage Tutorial - 4.4 Pipeline Configuration Adjustment Instructions</a>.</p>
 <h2 id="5-model-fine-tuning">5. Model Fine-Tuning<a class="headerlink" href="#5-model-fine-tuning" title="Permanent link">&para;</a></h2>
-<p>Please refer to the corresponding section in the <a href="PaddleOCR-VL.html">PaddleOCR-VL Usage Tutorial</a>.</p>
+<p>Please refer to <a href="PaddleOCR-VL.html#5-model-fine-tuning">PaddleOCR-VL Usage Tutorial - 5. Model Fine-Tuning</a>.</p>
 
 <!-- Source file information -->
 
@@ -4891,13 +5612,13 @@ Refer to the <a href="./PaddleOCR-VL.en.md#44-pipeline-configuration-adjustment-
         
         
           
-          <a href="PaddleOCR-VL-XPU.html" class="md-footer__link md-footer__link--next" aria-label="Next: PaddleOCR-VL XPU Environment Configuration Tutorial">
+          <a href="PaddleOCR-VL-Kunlunxin-XPU.html" class="md-footer__link md-footer__link--next" aria-label="Next: PaddleOCR-VL Kunlunxin XPU Usage Tutorial">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                PaddleOCR-VL XPU Environment Configuration Tutorial
+                PaddleOCR-VL Kunlunxin XPU Usage Tutorial
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -4965,10 +5686,10 @@ Refer to the <a href="./PaddleOCR-VL.en.md#44-pipeline-configuration-adjustment-
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["announce.dismiss", "content.tooltips", "content.code.copy", "content.tabs.link", "content.footnote.tooltips", "content.action.edit", "content.action.view", "navigation.expand", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.footer", "navigation.indexes", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["announce.dismiss", "content.tooltips", "content.code.copy", "content.tabs.link", "content.footnote.tooltips", "content.action.edit", "content.action.view", "navigation.expand", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "navigation.footer", "navigation.indexes", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../javascripts/katex.min.js"></script>
       
