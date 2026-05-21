@@ -250,9 +250,12 @@ def draw_structure_result(image, result, font_path):
             pass
         else:
             for text_result in region["res"]:
-                boxes.append(np.array(text_result["text_region"]))
-                txts.append(text_result["text"])
-                scores.append(text_result["confidence"])
+                # 兼容新旧字段名
+                text_region = text_result.get("region") or text_result.get("text_region")
+                if text_region:
+                    boxes.append(np.array(text_region))
+                    txts.append(text_result["text"])
+                    scores.append(text_result["confidence"])
 
                 if "text_word_region" in text_result:
                     for word_region in text_result["text_word_region"]:

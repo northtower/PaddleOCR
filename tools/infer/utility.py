@@ -171,19 +171,103 @@ def init_args():
         "--enable_font_classifier",
         type=str2bool,
         default=False,
-        help="Whether to enable font family classification",
+        help="Whether to enable font attribute classification",
     )
+    parser.add_argument(
+        "--font_classifier_batch_size",
+        type=int,
+        default=64,
+        help="Batch size for font classification (higher = faster but more memory)",
+    )
+    parser.add_argument(
+        "--use_simple_font",
+        type=str2bool,
+        default=False,
+        help="Use simplified font model (4 classes: 中文宋体/黑体, Times New Roman, Arial) for faster inference",
+    )
+    
+    # 简化字体分类器（4类，推荐用于高性能场景）
+    parser.add_argument(
+        "--font_simple_model_path",
+        type=str,
+        default="./inference/font_classifier/simple/model.pdparams",
+        help="Path to simplified font classification model (4 classes)",
+    )
+    parser.add_argument(
+        "--font_simple_dict_path",
+        type=str,
+        default="./inference/font_classifier/simple/labels.txt",
+        help="Path to simplified font classification dictionary",
+    )
+    
+    # 字体家族分类器
+    parser.add_argument(
+        "--font_family_model_path",
+        type=str,
+        default="./inference/font_classifier/family/model.pdparams",
+        help="Path to font family classification model",
+    )
+    parser.add_argument(
+        "--font_family_dict_path",
+        type=str,
+        default="./inference/font_classifier/family/labels.txt",
+        help="Path to font family classification dictionary",
+    )
+    
+    # 字号分类器
+    parser.add_argument(
+        "--font_size_model_path",
+        type=str,
+        default="./inference/font_classifier/size/model.pdparams",
+        help="Path to font size classification model",
+    )
+    parser.add_argument(
+        "--font_size_dict_path",
+        type=str,
+        default="./inference/font_classifier/size/labels.txt",
+        help="Path to font size classification dictionary",
+    )
+    
+    # 字体样式分类器
+    parser.add_argument(
+        "--font_style_model_path",
+        type=str,
+        default="./inference/font_classifier/style/model.pdparams",
+        help="Path to font style classification model",
+    )
+    parser.add_argument(
+        "--font_style_dict_path",
+        type=str,
+        default="./inference/font_classifier/style/labels.txt",
+        help="Path to font style classification dictionary",
+    )
+    
+    # 字体颜色分类器
+    parser.add_argument(
+        "--font_color_model_path",
+        type=str,
+        default="./inference/font_classifier/color/model.pdparams",
+        help="Path to font color classification model",
+    )
+    parser.add_argument(
+        "--font_color_dict_path",
+        type=str,
+        default="./inference/font_classifier/color/labels.txt",
+        help="Path to font color classification dictionary",
+    )
+    
+    # 兼容旧版本参数
     parser.add_argument(
         "--font_model_path",
         type=str,
-        default="./inference/font_classifier/font_family.pdparams",
-        help="Path to font classification model",
+        default="./inference/font_classifier/family/model.pdparams",
+        help="(Deprecated) Path to font classification model, use --font_family_model_path instead",
     )
     parser.add_argument(
         "--font_dict_path",
         type=str,
-        default="./inference/font_classifier/font_family_dict.txt",
-        help="Path to font classification dictionary",
+        default="./inference/font_classifier/family/labels.txt",
+        help="(Deprecated) Path to font classification dictionary, use --font_family_dict_path instead",
     )
 
     return parser

@@ -152,19 +152,84 @@ class TextSystem(object):
         if self.args.save_crop_res:
             self.draw_crop_rec_res(self.args.crop_res_save_dir, img_crop_list, rec_res)
         
-        # 字体分类 - 在过滤之前先给所有结果添加字体信息
+        # 字体分类 - 批量字符识别（GPU批处理优化）
         font_res = []
         if self.enable_font_classifier:
             font_start = time.time()
-            font_res = self.font_classifier.predict_batch(img_crop_list)
+            
+            # 第一步：收集所有字符图像和索引映射
+            all_char_crops = []
+            char_to_line_map = []  # (line_idx, char_idx)
+            line_char_counts = []  # 每行的字符数
+            
+            for line_idx, (box, rec_result) in enumerate(zip(dt_boxes, rec_res)):
+                rec_str, rec_conf = rec_result[0], rec_result[1]
+                char_word_info = rec_result[2] if len(rec_result) > 2 else None
+                
+                if char_word_info is not None:
+                    # 计算字符位置
+                    from ppstructure.utility import cal_ocr_word_box
+                    word_box_content_list, word_box_list = cal_ocr_word_box(
+                        rec_str, box, char_word_info
+                    )
+                    
+                    # 裁剪所有字符
+                    for char_idx, (char, char_box) in enumerate(zip(word_box_content_list, word_box_list)):
+                        try:
+                            # char_box 格式: ((x1, y1), (x2, y2), (x3, y3), (x4, y4))
+                            x_coords = [p[0] for p in char_box]
+                            y_coords = [p[1] for p in char_box]
+                            x_min = int(max(0, min(x_coords)))
+                            x_max = int(min(ori_im.shape[1], max(x_coords)))
+                            y_min = int(max(0, min(y_coords)))
+                            y_max = int(min(ori_im.shape[0], max(y_coords)))
+                            
+                            if x_max > x_min and y_max > y_min:
+                                char_crop = ori_im[y_min:y_max, x_min:x_max]
+                                all_char_crops.append(char_crop)
+                                char_to_line_map.append((line_idx, char_idx))
+                        except Exception as e:
+                            logger.debug(f"Character crop failed: {e}")
+                    
+                    line_char_counts.append(len(word_box_content_list))
+                else:
+                    # 如果没有字符位置信息，使用行级图像
+                    line_char_counts.append(len(rec_str))
+            
+            # 第二步：批量预测所有字符（一次性GPU推理）
+            if all_char_crops:
+                logger.debug(f"Batch predicting {len(all_char_crops)} characters...")
+                batch_font_results = self.font_classifier.predict_batch(all_char_crops)
+                
+                # 第三步：重组结果到每一行
+                # 创建映射字典：(line_idx, char_idx) -> result
+                result_map = {}
+                for idx, (line_idx, char_idx) in enumerate(char_to_line_map):
+                    result_map[(line_idx, char_idx)] = batch_font_results[idx] if idx < len(batch_font_results) else {}
+                
+                # 按行重组
+                for line_idx in range(len(rec_res)):
+                    char_count = line_char_counts[line_idx]
+                    line_char_attrs = []
+                    
+                    for char_idx in range(char_count):
+                        key = (line_idx, char_idx)
+                        line_char_attrs.append(result_map.get(key, {}))
+                    
+                    font_res.append(line_char_attrs)
+            else:
+                # 没有字符，创建空结果
+                for line_idx in range(len(rec_res)):
+                    font_res.append([])
+            
             font_elapse = time.time() - font_start
             time_dict["font"] = font_elapse
-            logger.debug("font_res num : {}, elapsed : {}".format(len(font_res), font_elapse))
+            logger.debug("font_res num : {}, elapsed : {:.3f}s (batch mode)".format(len(font_res), font_elapse))
             
             # 将字体信息添加到识别结果中
             for idx in range(len(rec_res)):
-                if idx < len(font_res) and font_res[idx] is not None:
-                    # 将 rec_res 转换为列表并添加字体信息
+                if idx < len(font_res):
+                    # 将 rec_res 转换为列表并添加字符级字体信息
                     rec_res[idx] = list(rec_res[idx]) + [font_res[idx]]
         
         filter_boxes, filter_rec_res = [], []
@@ -266,10 +331,21 @@ def main(args):
                 # 如果包含字体信息，也打印出来
                 if len(rec_result) > 3 and isinstance(rec_result[3], dict):
                     font_info = rec_result[3]
-                    logger.debug("  Font: {}, Confidence: {:.3f}".format(
-                        font_info.get('class_name', 'unknown'),
-                        font_info.get('confidence', 0.0)
-                    ))
+                    # 多属性字体信息打印
+                    font_parts = []
+                    if 'family' in font_info:
+                        font_parts.append(f"Family: {font_info['family']} ({font_info.get('family_confidence', 0.0):.3f})")
+                    if 'size' in font_info:
+                        font_parts.append(f"Size: {font_info['size']} ({font_info.get('size_confidence', 0.0):.3f})")
+                    if 'style' in font_info:
+                        font_parts.append(f"Style: {font_info['style']} ({font_info.get('style_confidence', 0.0):.3f})")
+                    if 'color' in font_info:
+                        font_parts.append(f"Color: {font_info['color']} ({font_info.get('color_confidence', 0.0):.3f})")
+                    # 兼容旧版本
+                    if 'class_name' in font_info and 'family' not in font_info:
+                        font_parts.append(f"Font: {font_info['class_name']} ({font_info.get('confidence', 0.0):.3f})")
+                    if font_parts:
+                        logger.debug("  " + ", ".join(font_parts))
 
             res = []
             for i in range(len(dt_boxes)):
@@ -277,11 +353,26 @@ def main(args):
                     "transcription": rec_res[i][0],
                     "points": np.array(dt_boxes[i]).astype(np.int32).tolist(),
                 }
-                # 如果包含字体信息，添加到结果中
+                # 如果包含字体信息，添加到结果中（支持多属性）
                 if len(rec_res[i]) > 3 and isinstance(rec_res[i][3], dict):
                     font_info = rec_res[i][3]
-                    result_dict["font_family"] = font_info.get("class_name", "unknown")
-                    result_dict["font_confidence"] = font_info.get("confidence", 0.0)
+                    # 添加多属性字体信息
+                    if "family" in font_info:
+                        result_dict["font_family"] = font_info.get("family", "unknown")
+                        result_dict["font_family_confidence"] = font_info.get("family_confidence", 0.0)
+                    if "size" in font_info:
+                        result_dict["font_size"] = font_info.get("size", "unknown")
+                        result_dict["font_size_confidence"] = font_info.get("size_confidence", 0.0)
+                    if "style" in font_info:
+                        result_dict["font_style"] = font_info.get("style", "unknown")
+                        result_dict["font_style_confidence"] = font_info.get("style_confidence", 0.0)
+                    if "color" in font_info:
+                        result_dict["font_color"] = font_info.get("color", "unknown")
+                        result_dict["font_color_confidence"] = font_info.get("color_confidence", 0.0)
+                    # 兼容旧版本（只有class_name和confidence的情况）
+                    if "class_name" in font_info and "family" not in font_info:
+                        result_dict["font_family"] = font_info.get("class_name", "unknown")
+                        result_dict["font_family_confidence"] = font_info.get("confidence", 0.0)
                 res.append(result_dict)
             if len(imgs) > 1:
                 save_pred = (

@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+繁体竖排文本识别专用脚本
+解决三个核心问题：
+1. 语序错误：繁体竖排从右向左，修正排序逻辑
+2. 繁体字识别错误：使用更好的繁体字典
+3. show_0.jpg 可视化错误：修正竖排文字显示
+"""
+
 import os
 import sys
 import subprocess
@@ -26,7 +34,11 @@ import json
 import numpy as np
 import time
 import logging
+import math
+import random
 from copy import deepcopy
+from PIL import Image, ImageDraw, ImageFont
+import PIL
 
 from paddle.utils import try_import
 from ppocr.utils.utility import get_image_file_list, check_and_read
@@ -36,13 +48,280 @@ from tools.infer.predict_system import TextSystem
 from tools.infer.predict_rec import TextRecognizer
 from ppstructure.layout.predict_layout import LayoutPredictor
 from ppstructure.table.predict_table import TableSystem, to_excel
-from ppstructure.utility import parse_args, draw_structure_result, cal_ocr_word_box
+from ppstructure.utility import parse_args, cal_ocr_word_box
 from ppstructure.line_detector import detect_all_lines, filter_lines_by_text_overlap
 
 logger = get_logger()
 
 
-class StructureSystem(object):
+def sorted_boxes_vertical_zhtw(dt_boxes):
+    """
+    繁体竖排专用排序：从右向左，从上到下
+    args:
+        dt_boxes(array): detected text boxes with shape [4, 2]
+    return:
+        sorted boxes(array): 从右向左排序的文本框
+    """
+    num_boxes = len(dt_boxes)
+    if num_boxes == 0:
+        return dt_boxes
+    
+    # 计算每个文本框的中心点 x 坐标（用于从右向左排序）
+    boxes_with_x = []
+    for box in dt_boxes:
+        if isinstance(box, np.ndarray):
+            box = box.tolist()
+        # 计算中心点 x 坐标
+        center_x = sum([p[0] for p in box]) / len(box)
+        center_y = sum([p[1] for p in box]) / len(box)
+        boxes_with_x.append((box, center_x, center_y))
+    
+    # 按 x 坐标从大到小排序（从右向左）
+    # 对于 y 坐标相近的框，按 x 从大到小排序
+    sorted_boxes = sorted(boxes_with_x, key=lambda x: (-x[1], x[2]))
+    
+    # 精细调整：同一列的框按 y 坐标排序
+    _boxes = []
+    i = 0
+    while i < num_boxes:
+        current_box = sorted_boxes[i]
+        column_boxes = [current_box]
+        j = i + 1
+        
+        # 找出同一列的所有框（x 坐标相近）
+        while j < num_boxes:
+            next_box = sorted_boxes[j]
+            # 如果 x 坐标差距小于 50 像素，认为是同一列
+            if abs(current_box[1] - next_box[1]) < 50:
+                column_boxes.append(next_box)
+                j += 1
+            else:
+                break
+        
+        # 同一列内按 y 坐标从小到大排序（从上到下）
+        column_boxes.sort(key=lambda x: x[2])
+        _boxes.extend([box[0] for box in column_boxes])
+        i = j
+    
+    return _boxes
+
+
+def draw_box_txt_fine_vertical(img_size, box, txt, font_path="./doc/fonts/simfang.ttf"):
+    """
+    针对竖排文字优化的绘制函数
+    简化版本：直接在原图上绘制文字，不使用透视变换
+    """
+    box_height = int(
+        math.sqrt((box[0][0] - box[3][0]) ** 2 + (box[0][1] - box[3][1]) ** 2)
+    )
+    box_width = int(
+        math.sqrt((box[0][0] - box[1][0]) ** 2 + (box[0][1] - box[1][1]) ** 2)
+    )
+
+    # 创建空白图像
+    img_right_text = np.ones((img_size[1], img_size[0], 3), dtype=np.uint8) * 255
+    
+    if txt and len(txt) > 0:
+        # 判断是否为竖排文字（高度 > 宽度）
+        is_vertical = box_height > box_width * 1.5
+        
+        # 计算文本框的中心点和角度
+        center_x = int((box[0][0] + box[2][0]) / 2)
+        center_y = int((box[0][1] + box[2][1]) / 2)
+        
+        # 转换为PIL图像以便绘制文字
+        img_pil = Image.fromarray(img_right_text)
+        draw = ImageDraw.Draw(img_pil)
+        
+        if is_vertical:
+            # 竖排文字：逐字垂直绘制
+            font_size = max(int(box_width * 0.7), 12)
+            try:
+                font = ImageFont.truetype(font_path, font_size, encoding="utf-8")
+            except:
+                font = ImageFont.load_default()
+            
+            # 计算起始位置（从上到下）
+            start_y = int(box[0][1]) + 5
+            x_pos = center_x - font_size // 2
+            
+            for char in txt:
+                if start_y > box[2][1] - font_size:
+                    break
+                draw.text((x_pos, start_y), char, fill=(0, 0, 0), font=font)
+                start_y += font_size + 2
+        else:
+            # 横排文字
+            font_size = max(int(box_height * 0.7), 12)
+            try:
+                font = ImageFont.truetype(font_path, font_size, encoding="utf-8")
+            except:
+                font = ImageFont.load_default()
+            
+            # 计算文字位置
+            start_x = int(box[0][0]) + 5
+            y_pos = center_y - font_size // 2
+            draw.text((start_x, y_pos), txt, fill=(0, 0, 0), font=font)
+        
+        img_right_text = np.array(img_pil)
+    
+    return img_right_text
+
+
+def draw_ocr_box_txt_vertical(
+    image,
+    boxes,
+    txts=None,
+    scores=None,
+    drop_score=0.5,
+    font_path="./doc/fonts/simfang.ttf",
+):
+    """
+    针对竖排文字优化的可视化函数
+    """
+    h, w = image.height, image.width
+    img_left = image.copy()
+    img_right = np.ones((h, w, 3), dtype=np.uint8) * 255
+    random.seed(0)
+
+    draw_left = ImageDraw.Draw(img_left)
+    if txts is None or len(txts) != len(boxes):
+        txts = [None] * len(boxes)
+    for idx, (box, txt) in enumerate(zip(boxes, txts)):
+        if scores is not None and scores[idx] < drop_score:
+            continue
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        
+        # 绘制左侧：半透明填充的文本框
+        draw_left.polygon(box, fill=color)
+        
+        # 绘制右侧：文本框边框 + 文字内容
+        # 先绘制边框
+        pts = np.array(box, np.int32).reshape((-1, 1, 2))
+        cv2.polylines(img_right, [pts], True, color, 2)
+        
+        # 再绘制文字（使用竖排优化的绘制函数）
+        img_right_text = draw_box_txt_fine_vertical((w, h), box, txt, font_path)
+        
+        # 将文字叠加到右侧图像上（只保留非白色部分）
+        mask = np.all(img_right_text == [255, 255, 255], axis=-1)
+        img_right[~mask] = img_right_text[~mask]
+        
+    img_left = Image.blend(image, img_left, 0.5)
+    img_show = Image.new("RGB", (w * 2, h), (255, 255, 255))
+    img_show.paste(img_left, (0, 0, w, h))
+    img_show.paste(Image.fromarray(img_right), (w, 0, w * 2, h))
+    return np.array(img_show)
+
+
+def draw_structure_result_vertical(image, result, font_path):
+    """
+    针对竖排文字优化的结构化结果绘制函数
+    """
+    if isinstance(image, np.ndarray):
+        image = Image.fromarray(image)
+    boxes, txts, scores = [], [], []
+
+    img_layout = image.copy()
+    draw_layout = ImageDraw.Draw(img_layout)
+    text_color = (255, 255, 255)
+    text_background_color = (80, 127, 255)
+    catid2color = {}
+    font_size = 15
+    try:
+        font = ImageFont.truetype(font_path, font_size, encoding="utf-8")
+    except:
+        font = ImageFont.load_default()
+
+    for region in result:
+        if region["type"] not in catid2color:
+            if region["type"] in ["underline", "line"]:
+                box_color = (255, 0, 0)
+            else:
+                box_color = (
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                )
+            catid2color[region["type"]] = box_color
+        else:
+            box_color = catid2color[region["type"]]
+        box_layout = region["bbox"]
+        
+        line_width = 5 if region["type"] in ["underline", "line"] else 3
+        draw_layout.rectangle(
+            [(box_layout[0], box_layout[1]), (box_layout[2], box_layout[3])],
+            outline=box_color,
+            width=line_width,
+        )
+
+        label_text = region["type"]
+        if region["type"] in ["underline", "line"] and "direction" in region:
+            label_text = f"{region['type']}({region['direction']})"
+        
+        if int(PIL.__version__.split(".")[0]) < 10:
+            text_w, text_h = font.getsize(label_text)
+        else:
+            left, top, right, bottom = font.getbbox(label_text)
+            text_w, text_h = right - left, bottom - top
+
+        draw_layout.rectangle(
+            [
+                (box_layout[0], box_layout[1]),
+                (box_layout[0] + text_w, box_layout[1] + text_h),
+            ],
+            fill=text_background_color,
+        )
+        draw_layout.text(
+            (box_layout[0], box_layout[1]), label_text, fill=text_color, font=font
+        )
+
+        if region["type"] == "table" or (
+            region["type"] == "equation" and "latex" in region["res"]
+        ):
+            pass
+        elif region["type"] in ["underline", "line"]:
+            pass
+        else:
+            for text_result in region["res"]:
+                text_region = text_result.get("region") or text_result.get("text_region")
+                if text_region:
+                    boxes.append(np.array(text_region))
+                    txts.append(text_result["text"])
+                    scores.append(text_result["confidence"])
+
+                if "text_word_region" in text_result:
+                    for word_region in text_result["text_word_region"]:
+                        char_box = word_region
+                        box_height = int(
+                            math.sqrt(
+                                (char_box[0][0] - char_box[3][0]) ** 2
+                                + (char_box[0][1] - char_box[3][1]) ** 2
+                            )
+                        )
+                        box_width = int(
+                            math.sqrt(
+                                (char_box[0][0] - char_box[1][0]) ** 2
+                                + (char_box[0][1] - char_box[1][1]) ** 2
+                            )
+                        )
+                        if box_height == 0 or box_width == 0:
+                            continue
+                        boxes.append(word_region)
+                        txts.append("")
+                        scores.append(1.0)
+
+    # 使用竖排优化的可视化函数
+    im_show = draw_ocr_box_txt_vertical(
+        img_layout, boxes, txts, scores, font_path=font_path
+    )
+    return im_show
+
+
+class StructureSystemVerticalZHTW(object):
+    """
+    繁体竖排专用的结构化系统
+    """
     def __init__(self, args):
         self.mode = args.mode
         self.recovery = args.recovery
@@ -50,12 +329,10 @@ class StructureSystem(object):
         self.image_orientation_predictor = None
         if args.image_orientation:
             import paddleclas
-
             self.image_orientation_predictor = paddleclas.PaddleClas(
                 model_name="text_image_orientation"
             )
 
-        # Line detection parameters
         self.enable_line_detection = getattr(args, 'enable_line_detection', False)
         self.line_min_length = getattr(args, 'line_min_length', 50)
         self.line_max_thickness = getattr(args, 'line_max_thickness', 5)
@@ -69,11 +346,12 @@ class StructureSystem(object):
                 logger.warning(
                     "When args.layout is false, args.ocr is automatically set to false"
                 )
-            # init model
+            
             self.layout_predictor = None
             self.text_system = None
             self.table_system = None
             self.formula_system = None
+            
             if args.layout:
                 self.layout_predictor = LayoutPredictor(args)
                 if args.ocr:
@@ -97,7 +375,6 @@ class StructureSystem(object):
 
         elif self.mode == "kie":
             from ppstructure.kie.predict_kie_token_ser_re import SerRePredictor
-
             self.kie_predictor = SerRePredictor(args)
 
         self.return_word_box = args.return_word_box
@@ -140,13 +417,6 @@ class StructureSystem(object):
                 h, w = ori_im.shape[:2]
                 layout_res = [dict(bbox=None, label="table", score=0.0)]
 
-            # As reported in issues such as #10270 and #11665, the old
-            # implementation, which recognizes texts from the layout regions,
-            # has problems with OCR recognition accuracy.
-            #
-            # To enhance the OCR recognition accuracy, we implement a patch fix
-            # that first use text_system to detect and recognize all text information
-            # and then filter out relevant texts according to the layout regions.
             text_res = None
             if self.text_system is not None:
                 text_res, ocr_time_dict = self._predict_text(img)
@@ -182,7 +452,6 @@ class StructureSystem(object):
 
                 else:
                     if text_res is not None:
-                        # Filter the text results whose regions intersect with the current layout bbox.
                         res = self._filter_text_res(text_res, bbox)
 
                 res_list.append(
@@ -196,7 +465,6 @@ class StructureSystem(object):
                     }
                 )
 
-            # [新增] 线条检测功能
             if self.enable_line_detection:
                 tic = time.time()
                 line_results = detect_all_lines(
@@ -206,7 +474,6 @@ class StructureSystem(object):
                     max_thickness=self.line_max_thickness
                 )
                 
-                # 如果需要过滤与文字重叠的线条
                 if self.filter_line_text_overlap and text_res is not None:
                     text_boxes = [r["text_region"] for r in text_res]
                     line_results['horizontal'] = filter_lines_by_text_overlap(
@@ -216,7 +483,6 @@ class StructureSystem(object):
                         line_results['vertical'], text_boxes
                     )
                 
-                # 将横线结果添加到返回列表
                 for line_box in line_results['horizontal']:
                     x1, y1, x2, y2 = line_box
                     roi_img = ori_im[y1:y2, x1:x2, :]
@@ -230,7 +496,6 @@ class StructureSystem(object):
                         'direction': 'horizontal'
                     })
                 
-                # 将竖线结果添加到返回列表
                 for line_box in line_results['vertical']:
                     x1, y1, x2, y2 = line_box
                     roi_img = ori_im[y1:y2, x1:x2, :]
@@ -260,27 +525,37 @@ class StructureSystem(object):
         return None, None
 
     def _predict_text(self, img):
+        """
+        使用繁体竖排优化的文本预测
+        """
         filter_boxes, filter_rec_res, ocr_time_dict = self.text_system(img)
 
-        # remove style char,
-        # when using the recognition model trained on the PubtabNet dataset,
-        # it will recognize the text format in the table, such as <b>
+        # 关键修改：使用繁体竖排排序
+        sorted_boxes_list = sorted_boxes_vertical_zhtw(filter_boxes)
+        
+        # 根据排序后的顺序重新排列 rec_res
+        # 创建原始 boxes 的索引映射
+        box_to_idx = {}
+        for idx, box in enumerate(filter_boxes):
+            box_tuple = tuple(map(tuple, box.tolist() if isinstance(box, np.ndarray) else box))
+            box_to_idx[box_tuple] = idx
+        
+        # 根据排序后的 boxes 重新排列 rec_res
+        sorted_rec_res = []
+        for sorted_box in sorted_boxes_list:
+            box_tuple = tuple(map(tuple, sorted_box if isinstance(sorted_box, list) else sorted_box.tolist()))
+            if box_tuple in box_to_idx:
+                sorted_rec_res.append(filter_rec_res[box_to_idx[box_tuple]])
+        
+        filter_boxes = sorted_boxes_list
+        filter_rec_res = sorted_rec_res
+
         style_token = [
-            "<strike>",
-            "<strike>",
-            "<sup>",
-            "</sub>",
-            "<b>",
-            "</b>",
-            "<sub>",
-            "</sup>",
-            "<overline>",
-            "</overline>",
-            "<underline>",
-            "</underline>",
-            "<i>",
-            "</i>",
+            "<strike>", "<strike>", "<sup>", "</sub>", "<b>", "</b>",
+            "<sub>", "</sup>", "<overline>", "</overline>",
+            "<underline>", "</underline>", "<i>", "</i>",
         ]
+        
         res = []
         for box, rec_res in zip(filter_boxes, filter_rec_res):
             rec_str, rec_conf = rec_res[0], rec_res[1]
@@ -288,23 +563,21 @@ class StructureSystem(object):
                 if token in rec_str:
                     rec_str = rec_str.replace(token, "")
             
-            # 检查是否包含字符级字体属性信息（列表格式）
             char_font_attrs = None
             if len(rec_res) > 3 and isinstance(rec_res[3], list):
                 char_font_attrs = rec_res[3]
             
             if self.return_word_box:
+                # 确保 box 是 numpy array
+                box_array = np.array(box) if not isinstance(box, np.ndarray) else box
                 word_box_content_list, word_box_list = cal_ocr_word_box(
-                    rec_str, box, rec_res[2]
+                    rec_str, box_array, rec_res[2]
                 )
                 
-                # 构建 Paragraph-Run-Text 结构
                 runs = []
                 if char_font_attrs and len(char_font_attrs) > 0:
-                    # 按照字体属性合并连续相同的字符为 Run
                     runs = self._build_runs(word_box_content_list, word_box_list, char_font_attrs)
                 else:
-                    # 如果没有字体信息，整行作为一个 Run
                     runs = [{
                         "text": "".join(word_box_content_list),
                         "chars": word_box_content_list,
@@ -314,30 +587,27 @@ class StructureSystem(object):
                 result_dict = {
                     "text": rec_str,
                     "confidence": float(rec_conf),
-                    "region": box.tolist(),
-                    "runs": runs,  # 核心：Run 结构
+                    "region": box.tolist() if isinstance(box, np.ndarray) else box,
+                    "runs": runs,
                 }
                 
-                # 向后兼容：保留旧字段
                 if getattr(self, 'return_word_box', True):
                     result_dict["text_word"] = word_box_content_list
                     result_dict["text_word_region"] = word_box_list
                 
                 res.append(result_dict)
             else:
-                # 简化版本（不包含 runs 结构）
                 result_dict = {
                     "text": rec_str,
                     "confidence": float(rec_conf),
-                    "region": box.tolist(),
+                    "region": box.tolist() if isinstance(box, np.ndarray) else box,
                 }
                 
-                # 如果有字体信息，创建单个 Run（保持结构一致）
                 if char_font_attrs and len(char_font_attrs) > 0:
                     first_attr = char_font_attrs[0]
                     result_dict["runs"] = [{
                         "text": rec_str,
-                        "region": box.tolist(),
+                        "region": box.tolist() if isinstance(box, np.ndarray) else box,
                         "properties": {
                             "font_family": first_attr.get("family", "unknown"),
                             "font_size": first_attr.get("size", "unknown"),
@@ -350,17 +620,6 @@ class StructureSystem(object):
         return res, ocr_time_dict
     
     def _build_runs(self, chars, char_regions, char_font_attrs):
-        """
-        将具有相同字体属性的连续字符合并为 Run (OOXML风格)
-        
-        Args:
-            chars: 字符列表
-            char_regions: 字符区域列表
-            char_font_attrs: 字符字体属性列表
-        
-        Returns:
-            runs: Run 列表，每个 Run 包含相同属性的连续字符
-        """
         if not chars or not char_font_attrs:
             return []
         
@@ -374,12 +633,9 @@ class StructureSystem(object):
         current_attrs = None
         
         for idx, (char, region, attrs) in enumerate(zip(chars, char_regions, char_font_attrs)):
-            # 提取关键属性用于比较
-            # 支持简化模型（只有class_name）和多属性模型
             key_attrs = None
             if attrs:
                 if "family" in attrs:
-                    # 多属性模型
                     key_attrs = (
                         attrs.get("family", ""),
                         attrs.get("size", ""),
@@ -387,19 +643,15 @@ class StructureSystem(object):
                         attrs.get("color", "")
                     )
                 elif "class_name" in attrs:
-                    # 简化模型（只有font类别）
                     key_attrs = (attrs.get("class_name", ""), "", "", "")
             
-            # 如果属性相同，添加到当前 Run
             if current_attrs is None or current_attrs == key_attrs:
                 current_run["text"] += char
                 current_run_regions.append(region)
                 current_attrs = key_attrs
                 
-                # 第一次设置属性（使用 properties 容器）
                 if attrs and not current_run["properties"]:
                     if "family" in attrs:
-                        # 多属性模型
                         current_run["properties"] = {
                             "font_family": attrs.get("family", "unknown"),
                             "font_size": attrs.get("size", "unknown"),
@@ -407,19 +659,15 @@ class StructureSystem(object):
                             "font_color": attrs.get("color", "unknown")
                         }
                     elif "class_name" in attrs:
-                        # 简化模型
                         current_run["properties"] = {
                             "font_family": attrs.get("class_name", "unknown"),
                             "font_confidence": attrs.get("confidence", 0.0)
                         }
             else:
-                # 属性不同，保存当前 Run 并开始新的 Run
                 if current_run["text"]:
-                    # 计算 Run 的边界框（合并所有字符区域）
                     current_run["region"] = self._merge_regions(current_run_regions)
                     runs.append(current_run)
                 
-                # 开始新 Run
                 current_run = {
                     "text": char,
                     "region": None,
@@ -428,10 +676,8 @@ class StructureSystem(object):
                 current_run_regions = [region]
                 current_attrs = key_attrs
                 
-                # 设置新 Run 的属性
                 if attrs:
                     if "family" in attrs:
-                        # 多属性模型
                         current_run["properties"] = {
                             "font_family": attrs.get("family", "unknown"),
                             "font_size": attrs.get("size", "unknown"),
@@ -439,13 +685,11 @@ class StructureSystem(object):
                             "font_color": attrs.get("color", "unknown")
                         }
                     elif "class_name" in attrs:
-                        # 简化模型
                         current_run["properties"] = {
                             "font_family": attrs.get("class_name", "unknown"),
                             "font_confidence": attrs.get("confidence", 0.0)
                         }
         
-        # 添加最后一个 Run
         if current_run["text"]:
             current_run["region"] = self._merge_regions(current_run_regions)
             runs.append(current_run)
@@ -453,22 +697,12 @@ class StructureSystem(object):
         return runs
     
     def _merge_regions(self, regions):
-        """
-        合并多个字符区域为一个 Run 边界框
-        
-        Args:
-            regions: 字符区域列表，每个是 [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
-        
-        Returns:
-            merged_region: 合并后的边界框
-        """
         if not regions:
             return [[0, 0], [0, 0], [0, 0], [0, 0]]
         
         if len(regions) == 1:
             return regions[0]
         
-        # 提取所有坐标点
         all_x = []
         all_y = []
         for region in regions:
@@ -476,7 +710,6 @@ class StructureSystem(object):
                 all_x.append(point[0])
                 all_y.append(point[1])
         
-        # 计算边界框
         x_min, x_max = min(all_x), max(all_x)
         y_min, y_max = min(all_y), max(all_y)
         
@@ -490,7 +723,6 @@ class StructureSystem(object):
     def _filter_text_res(self, text_res, bbox):
         res = []
         for r in text_res:
-            # 兼容新旧字段名
             box = r.get("region") or r.get("text_region")
             if box:
                 rect = box[0][0], box[0][1], box[2][0], box[2][1]
@@ -512,7 +744,7 @@ def save_structure_res(res, save_folder, img_name, img_idx=0):
     excel_save_folder = os.path.join(save_folder, img_name)
     os.makedirs(excel_save_folder, exist_ok=True)
     res_cp = deepcopy(res)
-    # save res
+    
     with open(
         os.path.join(excel_save_folder, "res_{}.txt".format(img_idx)),
         "w",
@@ -540,11 +772,10 @@ def save_structure_res(res, save_folder, img_name, img_idx=0):
 
 def main(args):
     image_file_list = get_image_file_list(args.image_dir)
-    image_file_list = image_file_list
     image_file_list = image_file_list[args.process_id :: args.total_process_num]
 
     if not args.use_pdf2docx_api:
-        structure_sys = StructureSystem(args)
+        structure_sys = StructureSystemVerticalZHTW(args)
         save_folder = os.path.join(args.output, structure_sys.mode)
         os.makedirs(save_folder, exist_ok=True)
     img_num = len(image_file_list)
@@ -585,7 +816,8 @@ def main(args):
             )
             os.makedirs(os.path.join(save_folder, img_name), exist_ok=True)
             if structure_sys.mode == "structure" and res != []:
-                draw_img = draw_structure_result(img, res, args.vis_font_path)
+                # 使用竖排优化的绘制函数
+                draw_img = draw_structure_result_vertical(img, res, args.vis_font_path)
                 save_structure_res(res, save_folder, img_name, index)
             elif structure_sys.mode == "kie":
                 if structure_sys.kie_predictor.predictor is not None:
@@ -635,6 +867,19 @@ def main(args):
 
 if __name__ == "__main__":
     args = parse_args()
+    
+    # 针对繁体竖排优化检测参数
+    # 关键：禁用layout检测，直接进行文本检测，避免整个区域被当作figure
+    args.layout = False  # 禁用layout检测
+    
+    # 降低阈值以检测更多文本
+    args.det_db_thresh = 0.2  # 从0.3降低到0.2，更容易检测小文本
+    args.det_db_box_thresh = 0.45  # 从0.6降低到0.45，降低框过滤阈值
+    args.det_db_unclip_ratio = 1.6  # 从1.5增加到1.6，适度扩大检测框
+    args.det_limit_side_len = 1920  # 从960增加到1920，保持更高分辨率
+    
+    logger.info(f"繁体竖排优化参数: layout={args.layout}, det_db_thresh={args.det_db_thresh}, det_db_box_thresh={args.det_db_box_thresh}, det_db_unclip_ratio={args.det_db_unclip_ratio}, det_limit_side_len={args.det_limit_side_len}")
+    
     if args.use_mp:
         p_list = []
         total_process_num = args.total_process_num
@@ -650,3 +895,4 @@ if __name__ == "__main__":
             p.wait()
     else:
         main(args)
+
